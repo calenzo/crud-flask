@@ -1,4 +1,3 @@
-from os import name
 from flask import Flask, request
 from app.Controller import getUserByName, insertUser, AllUser, getResponse
 
