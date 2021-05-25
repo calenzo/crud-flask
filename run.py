@@ -17,21 +17,15 @@ def createUser():
     body = request.get_json()
 
     if 'name' not in body:
-        return { "State" : 404, "Message" : "Parameter name is required" }
+        return getResponse(404, "Parameter name is required") 
 
     if 'pass' not in body:
-        return { "State" : 404, "Message" : "Parameter pass is required" }
+        return getResponse(404, "Parameter pass is required") 
 
     if 'email' not in body:
-        return { "State" : 404, "Message" : "Parameter email is required" }       
+        return getResponse(404, "Parameter email is required")  
 
-    user = insertUser(body['name'], body['pass'], body['email'])
-
-    return getResponse(200, "User create", "user", user)
-
-@app.route('/<string>')
-def undefined(string):
-    return { "State" : 404, "Message" : 'URL "{}" invalid'.format(string) }
+    return insertUser(body['name'], body['pass'], body['email'])
 
 app.run(debug=True)
 

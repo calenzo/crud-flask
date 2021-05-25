@@ -18,15 +18,28 @@ def getUserByName(name):
     for row in rows:
         return { "id" : row['id'], "name" : row['name'], "pass" : row['pass'], "email" : row['email'] }
 
-    return { "Error" : 404, "Message" : "Do not user is exists" }
+    return getResponse(404, "Do not user is exists")
 
 def insertUser(name, password, email):
 
-    with connection.cursor() as cursor:
-        cursor.execute(f'INSERT INTO `people` (`name`, `pass`, `email`) VALUES ("{name}", "{password}", "{email}")')
-        connection.commit()
+    cursor = connection.cursor()
 
-    return { "name" : name }
+    cursor.execute(f'SELECT `name` FROM `people` WHERE `name`="{name}"')
+    row = cursor.fetchall()
+ 
+    if row:
+        return getResponse(404, "User exists")
+
+    cursor.execute(f'SELECT `email` FROM `people` WHERE `email`="{email}"')
+    row = cursor.fetchall()
+
+    if row:
+        return getResponse(404, "Email exists")      
+
+    cursor.execute(f'INSERT INTO `people` (`name`, `pass`, `email`) VALUES ("{name}", "{password}", "{email}")')
+    connection.commit()
+
+    return getResponse(200, "User create", "user", { "name" : name })     
 
 def getResponse(state, message, nameContent=False, content=False):
     
