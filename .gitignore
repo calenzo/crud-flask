@@ -1,2 +1,4 @@
+#local
 venv/
 .vscode/
+__pycache__/
