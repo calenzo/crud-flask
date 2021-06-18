@@ -2,31 +2,32 @@ from app.Model import connection
 from flask import jsonify
 
 def AllUser():
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT * FROM `people`')
+    rows = cursor.fetchall()
 
-    with connection.cursor() as cursor:
-        cursor.execute(f'SELECT * FROM `people`')
-        rows = cursor.fetchall()
+    if rows:
+        return jsonify(rows)
 
-    return jsonify(rows)
+    return getResponse(404, "Not found") 
+
 
 def getUserByName(name):
-                                                               
-    with connection.cursor() as cursor:
-        cursor.execute(f'SELECT * FROM `people` WHERE `name`="{name}"')
-        rows = cursor.fetchall()
+    cursor = connection.cursor()                                        
+    cursor.execute(f'SELECT * FROM `people` WHERE `name`="{name}"')
+    rows = cursor.fetchall()
 
-    for row in rows:
-        return { "id" : row['id'], "name" : row['name'], "pass" : row['pass'], "email" : row['email'] }
+    if rows:
+        return rows
 
-    return getResponse(404, "Do not user is exists")
+    return getResponse(404, "Not found")
+
 
 def insertUser(name, password, email):
-
     cursor = connection.cursor()
-
     cursor.execute(f'SELECT `name` FROM `people` WHERE `name`="{name}"')
     row = cursor.fetchall()
- 
+
     if row:
         return getResponse(404, "User exists")
 
@@ -34,15 +35,17 @@ def insertUser(name, password, email):
     row = cursor.fetchall()
 
     if row:
-        return getResponse(404, "Email exists")      
+        return getResponse(404, "email exists")      
 
     cursor.execute(f'INSERT INTO `people` (`name`, `pass`, `email`) VALUES ("{name}", "{password}", "{email}")')
     connection.commit()
 
-    return getResponse(200, "User create", "user", { "name" : name })     
+    return getResponse(201, "sucess", "user", { 
+        "name" : name 
+    })     
+
 
 def getResponse(state, message, nameContent=False, content=False):
-    
     response = {}
     response["state"] = state
     response["message"] = message
