@@ -1,5 +1,5 @@
 from flask import Flask, request
-from app.Controller import getUserByName, insertUser, AllUser, getResponse
+from app.Controller import *
 
 app = Flask(__name__)
 
@@ -14,31 +14,30 @@ def getUser(name):
 
 
 @app.route('/users/create', methods=['POST'])
-def createUser(self):
+def createUser():
     body = request.get_json()
 
-    if 'name' or 'password1' or 'password2' or 'email' not in body: 
-        return getResponse(400, "Bad Request", "Required", {  
-            "name",
-            "password1",
-            "password2",
-            "email"
-        }) 
+    error = getErrorParams(body, "name", "password1", "password2", "email")
+ 
+    if error != -1:
+        return error
 
-    self.name = body['name']
-    self.password1 = body['password1']
-    self.password2 = body['password2']
-    self.email = body['email']
+    name = body['name']
+    password1 = body['password1']
+    password2 = body['password2']
+    email = body['email']
 
-    if self.password1 != self.passowrd2: 
+    if password1 != password2: 
         return getResponse(400, "Bad Request", "It's not the same", {
-            "password1",
-            "password2"
+            "password1" : "password1",
+            "password2" : "password2"
         })
-    return insertUser(self.name, 
-        self.password1, 
-        self.email
+        
+    return insertUser(name, 
+        password1, 
+        email
     )
+
 
 
 app.run(debug=True)

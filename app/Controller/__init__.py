@@ -12,6 +12,7 @@ def AllUser():
     return getResponse(404, "Not found") 
 
 
+
 def getUserByName(name):
     cursor = connection.cursor()                                        
     cursor.execute(f'SELECT * FROM `people` WHERE `name`="{name}"')
@@ -21,6 +22,7 @@ def getUserByName(name):
         return rows
 
     return getResponse(404, "Not found")
+
 
 
 def insertUser(name, password, email):
@@ -40,9 +42,10 @@ def insertUser(name, password, email):
     cursor.execute(f'INSERT INTO `people` (`name`, `pass`, `email`) VALUES ("{name}", "{password}", "{email}")')
     connection.commit()
 
-    return getResponse(201, "sucess", "user", { 
+    return getResponse(201, "success", "user", { 
         "name" : name 
     })     
+
 
 
 def getResponse(state, message, nameContent=False, content=False):
@@ -54,3 +57,13 @@ def getResponse(state, message, nameContent=False, content=False):
         response[nameContent] = content
 
     return response        
+
+
+
+def getErrorParams(body, *params):
+    for param in params:
+        if param not in body: 
+            return getResponse(400, "Bad Request", "Required", {  
+                param : param
+            }) 
+    return -1;    
